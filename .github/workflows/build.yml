@@ -7,6 +7,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Cấu hình này ép buộc các Action sử dụng Node 24 ngay từ bây giờ
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
