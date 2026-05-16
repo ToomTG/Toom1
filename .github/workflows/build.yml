@@ -26,9 +26,8 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        # Đảm bảo file buildozer.spec tồn tại
-        ls -la
-        # Chạy buildozer
+        # Chấp nhận giấy phép Android SDK một cách tự động
+        export P4A_SDK_DIR="/tmp/android-sdk"
         buildozer android debug
 
     - name: Upload APK
