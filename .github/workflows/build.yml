@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.11' 
 
-      # 3. Cài đặt các thư viện hệ thống và Buildozer (Đã cập nhật gói cho Ubuntu 24.04)
+      # 3. Cài đặt các thư viện hệ thống và Buildozer (Tương thích Ubuntu 24.04)
       - name: Install Build system dependencies
         run: |
           sudo apt-get update
@@ -32,7 +32,10 @@ jobs:
         run: |
           yes | buildozer android debug
 
-      # 5. Tải file APK thu được lên GitHub
+      # 5. Tải file APK thu được lên GitHub để download
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
           name: ToomTG-Android-App
           path: bin/*.apk
           retention-days: 5
