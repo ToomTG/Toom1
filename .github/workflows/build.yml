@@ -2,9 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -15,23 +13,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install --upgrade buildozer cython
+          pip install --upgrade buildozer cython virtualenv
 
       - name: Build with Buildozer
         run: |
-          # Thiết lập biến môi trường để chấp nhận SDK License tự động
-          mkdir -p .buildozer/android/platform/android-sdk-20/licenses
-          echo "8933bad161af4178b1185d1a37fbf41ea5261c55" > .buildozer/android/platform/android-sdk-20/licenses/android-sdk-license
-          
+          # Cấu hình để Buildozer tự động chấp nhận license Android
+          export PATH=$PATH:~/.local/bin/
           # Chạy build
           buildozer android debug
 
