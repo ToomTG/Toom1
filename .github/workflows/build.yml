@@ -1,6 +1,5 @@
 name: Build Android APK
 
-# Kích hoạt workflow khi có code mới đẩy lên nhánh main hoặc tự chạy thủ công
 on:
   push:
     branches: [ "main" ]
@@ -10,13 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Áp dụng ngay thiết lập từ thông báo cập nhật mới của GitHub
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
       # 1. Lấy mã nguồn về máy chủ GitHub
-      # Sử dụng v4 để tương thích tốt nhất với các bản cập nhật Node của GitHub
       - name: Checkout source code
         uses: actions/checkout@v4
 
@@ -26,27 +20,22 @@ jobs:
         with:
           python-version: '3.11' 
 
-      # 3. Cài đặt các thư viện lõi hệ thống và Buildozer
+      # 3. Cài đặt các thư viện hệ thống và Buildozer
       - name: Install Build system dependencies
         run: |
-          sudo apt update
-          # Cài đặt OpenJDK 17 và các thư viện cần thiết cho việc biên dịch Android
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          
-          # Cài đặt Buildozer và Cython qua pip
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --upgrade buildozer cython virtualenv
 
       # 4. Chạy Buildozer để tạo APK
       - name: Build APK with Buildozer
         run: |
-          # Lệnh 'yes' giúp tự động đồng ý (accept) các điều khoản của Android SDK khi tải về
           yes | buildozer android debug
 
-      # 5. Tải file APK thu được lên GitHub để bạn tải về máy
+      # 5. Tải file APK thu được lên GitHub
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToomTG-Android-App
           path: bin/*.apk
-          # Giữ file tải về trong 5 ngày để tiết kiệm dung lượng lưu trữ của GitHub
           retention-days: 5
