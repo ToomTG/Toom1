@@ -3,39 +3,35 @@ name: Build Android APK
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      # 1. Lấy mã nguồn về máy chủ GitHub
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 2. Cài đặt Python
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11' 
+          python-version: '3.11'
 
-      # 3. Cài đặt các thư viện hệ thống và Buildozer
       - name: Install Build system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip install --upgrade pip
           pip install --upgrade buildozer cython virtualenv
 
-      # 4. Chạy Buildozer để tạo APK
-      - name: Build APK with Buildozer
+      - name: Build with Buildozer
         run: |
-          yes | buildozer android debug
+          buildozer android debug
 
-      # 5. Tải file APK thu được lên GitHub
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ToomTG-Android-App
+          name: Galaxy-Game-APK
           path: bin/*.apk
-          retention-days: 5
