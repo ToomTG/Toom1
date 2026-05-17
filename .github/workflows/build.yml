@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Lấy mã nguồn về máy chủ GitHub
+      # 1. Lấy mã nguồn
       - name: Checkout source code
         uses: actions/checkout@v4
 
@@ -20,19 +20,21 @@ jobs:
         with:
           python-version: '3.11' 
 
-      # 3. Cài đặt các thư viện hệ thống và Buildozer (Tương thích Ubuntu 24.04)
+      # 3. Cài đặt thư viện hệ thống & ÉP phiên bản Cython
       - name: Install Build system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses-dev cmake libffi-dev libssl-dev
-          pip install --upgrade buildozer cython virtualenv
+          # KHÔNG dùng --upgrade cho cython, thay vào đó khóa cứng ở bản 0.29.33
+          pip install --upgrade buildozer virtualenv
+          pip install "cython==0.29.33"
 
       # 4. Chạy Buildozer để tạo APK
       - name: Build APK with Buildozer
         run: |
           yes | buildozer android debug
 
-      # 5. Tải file APK thu được lên GitHub để download
+      # 5. Tải file APK lên GitHub
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
