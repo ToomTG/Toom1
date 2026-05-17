@@ -10,34 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Lấy mã nguồn
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 2. Cài đặt Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11' 
 
-      # 3. Cài đặt thư viện hệ thống & ÉP phiên bản Cython
       - name: Install Build system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses-dev cmake libffi-dev libssl-dev
-          # KHÔNG dùng --upgrade cho cython, thay vào đó khóa cứng ở bản 0.29.33
           pip install --upgrade buildozer virtualenv
-          pip install "cython==0.29.33"
+          pip install "cython<3.0.0"
 
-      # 4. Chạy Buildozer để tạo APK
-      - name: Build APK with Buildozer
-        run: |
-          yes | buildozer android debug
+      # Sử dụng Action được tối ưu sẵn cho Buildozer
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: master
 
-      # 5. Tải file APK lên GitHub
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToomTG-Android-App
-          path: bin/*.apk
+          path: ${{ steps.buildozer.outputs.filename }}
           retention-days: 5
